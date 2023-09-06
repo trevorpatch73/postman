@@ -1,0 +1,207 @@
+{
+	"info": {
+		"_postman_id": "a5657615-e539-4f25-8872-fc3af57511a4",
+		"name": "ACI_SWITCHPORT_STATUS",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "aaaLogin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"aaaUser\": {\r\n            \"attributes\": {\r\n                \"name\": \"{{USERNAME}}\",\r\n                \"pwd\": \"{{PASSWORD}}\"\r\n            }\r\n        }\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{APIC}}/api/aaaLogin.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"aaaLogin.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fabricNodes",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const resBody = pm.response.json();\r",
+							"let dnArray = [];\r",
+							"\r",
+							"resBody.imdata.forEach(function(node){\r",
+							"    let role = node.fabricNode.attributes.role;\r",
+							"    let dn = node.fabricNode.attributes.dn;\r",
+							"    if(role === \"leaf\" || role === \"spine\") {\r",
+							"        dnArray.push(dn);\r",
+							"    }\r",
+							"});\r",
+							"\r",
+							"pm.collectionVariables.set(\"dnArray\", JSON.stringify(dnArray));  // Use collectionVariables instead of environment\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{APIC}}/api/node/class/fabricNode.json?",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"node",
+						"class",
+						"fabricNode.json"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fabricNodeInterfaces",
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"let dnArray = JSON.parse(pm.collectionVariables.get(\"dnArray\") || \"[]\");\r",
+							"if (dnArray.length > 0) {\r",
+							"    let nextDN = dnArray.shift();\r",
+							"    pm.collectionVariables.set(\"dnArray\", JSON.stringify(dnArray));\r",
+							"    pm.collectionVariables.set(\"nextDN\", nextDN);\r",
+							"\r",
+							"    console.log(\"Setting DN to:\", nextDN);\r",
+							"    pm.request.url = `https://10.10.20.14/api/node/class/${nextDN}/ethpmPhysIf.json`;\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Get the existing parsed data (if any)\r",
+							"let parsedData = pm.collectionVariables.get(\"parsedData\");\r",
+							"if (!parsedData) {\r",
+							"    parsedData = [];\r",
+							"} else {\r",
+							"    parsedData = JSON.parse(parsedData);\r",
+							"}\r",
+							"\r",
+							"// Get the response body\r",
+							"let resBody = pm.response.json();\r",
+							"\r",
+							"// Loop through each interface in the response\r",
+							"resBody.imdata.forEach(function(interfaceData) {\r",
+							"    let attributes = interfaceData.ethpmPhysIf.attributes;\r",
+							"\r",
+							"    // Extracting data\r",
+							"    let dn = attributes.dn;\r",
+							"    let nodeId = dn.split(\"/\")[2].replace(\"node-\", \"\");  // Adjusted this line\r",
+							"    let interfaceId = dn.split(\"[\")[1].split(\"]\")[0];\r",
+							"    let mode = attributes.usage;\r",
+							"    let state = attributes.operSt;\r",
+							"\r",
+							"    // Create the dictionary\r",
+							"    let interfaceDict = {\r",
+							"        \"node_id\": nodeId,\r",
+							"        \"interface\": interfaceId,\r",
+							"        \"mode\": mode,\r",
+							"        \"state\": state\r",
+							"    };\r",
+							"\r",
+							"    // Add this dictionary to the parsedData array\r",
+							"    parsedData.push(interfaceDict);\r",
+							"});\r",
+							"\r",
+							"// Update the collection variable\r",
+							"pm.collectionVariables.set(\"parsedData\", JSON.stringify(parsedData));\r",
+							"\r",
+							"// Check if the dnArray is empty\r",
+							"let dnArray = JSON.parse(pm.collectionVariables.get(\"dnArray\") || \"[]\");\r",
+							"\r",
+							"if (dnArray.length > 0) {\r",
+							"    // Set next request to continue processing remaining nodes\r",
+							"    postman.setNextRequest(\"fabricNodeInterfaces\");\r",
+							"} else {\r",
+							"    // Convert the parsed data to CSV format\r",
+							"    let csvData = \"node_id,interface,mode,state\\n\";  // Header row\r",
+							"    parsedData.forEach(function(row) {\r",
+							"        csvData += `${row.node_id},${row.interface},${row.mode},${row.state}\\n`;\r",
+							"    });\r",
+							"\r",
+							"    // Print the CSV formatted data to the console\r",
+							"    console.log(\"Final Parsed Data in CSV Format:\\n\" + csvData);\r",
+							"    \r",
+							"    postman.setNextRequest(null);  // Stop workflow if dnArray is empty\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://{{APIC}}/api/node/class/{{nextDN}}/ethpmPhysIf.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"node",
+						"class",
+						"{{nextDN}}",
+						"ethpmPhysIf.json"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"variable": [
+		{
+			"key": "dnArray",
+			"value": ""
+		},
+		{
+			"key": "nextDN",
+			"value": ""
+		},
+		{
+			"key": "parsedData",
+			"value": ""
+		}
+	]
+}
