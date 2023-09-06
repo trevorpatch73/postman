@@ -96,8 +96,10 @@
 							"    pm.collectionVariables.set(\"dnArray\", JSON.stringify(dnArray));\r",
 							"    pm.collectionVariables.set(\"nextDN\", nextDN);\r",
 							"\r",
+							"    let apicIP = pm.environment.get(\"APIC\");\r",
+							"\r",
 							"    console.log(\"Setting DN to:\", nextDN);\r",
-							"    pm.request.url = `https://10.10.20.14/api/node/class/${nextDN}/ethpmPhysIf.json`;\r",
+							"    pm.request.url = `https://${apicIP}/api/node/class/${nextDN}/ethpmPhysIf.json`;\r",
 							"}\r",
 							""
 						],
