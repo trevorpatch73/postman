@@ -1,0 +1,100 @@
+{
+	"info": {
+		"_postman_id": "e4c9fb73-402f-48fb-8323-66b308a30338",
+		"name": "Cisco ACI Switch Upgrade/Downgrade",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4389825"
+	},
+	"item": [
+		{
+			"name": "aaaLogin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"aaaUser\": {\r\n    \"attributes\": {\r\n      \"name\": \"{{USERNAME}}\",\r\n      \"pwd\": \"{{PASSWORD}}\"\r\n    }\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{APIC}}/api/aaaLogin.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"aaaLogin.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fabricMaintGrp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"fabricInst\": {\r\n        \"maintMaintP\": {\r\n            \"version\": \"{{CODE_VERSION}}\",\r\n            \"name\": \"{{MAINTENANCE_GROUP_NAME}}\",\r\n            \"runMode\": \"pauseNever\"\r\n        },\r\n        \"maintMaintGrp\": {\r\n            \"name\": \"{{MAINTENANCE_GROUP_NAME}}\",\r\n            \"fabricNodeBlk\": [\r\n                {\r\n                    \"name\": \"Blk{{NODE_ID}}\",\r\n                    \"from_\": \"{{NODE_ID}}\",\r\n                    \"to_\": \"{{NODE_ID}}\"\r\n                }\r\n            ],\r\n            \"maintRsMgrpp\": {\r\n                \"tnMaintMaintPName\": \"{{MAINTENANCE_GROUP_NAME}}\"\r\n            }\r\n        }\r\n    }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{APIC}}/api/node/mo/uni/fabric.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"node",
+						"mo",
+						"uni",
+						"fabric.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fabricMaintGrpTrig",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"maintMaintP\": {\r\n        \"name\": \"{{MAINTENANCE_GROUP_NAME}}\",\r\n        \"adminSt\": \"triggered\"\r\n    }\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{APIC}}/api/node/mo/uni/fabric.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"node",
+						"mo",
+						"uni",
+						"fabric.json"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

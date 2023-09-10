@@ -1,0 +1,7 @@
+APIC,NODE_ID,MAINTENANCE_GROUP_NAME,CODE_VERSION
+1.1.1.1,101,pod-1-odd-leaf,14.2.7u
+1.1.1.1,102,pod-1-odd-even,14.2.7u
+2.2.2.2,101,pod-1-odd-leaf,14.2.7u
+2.2.2.2,102,pod-1-odd-even,14.2.7u
+3.3.3.3,101,pod-1-odd-leaf,15.2.1r
+3.3.3.3,102,pod-1-odd-even,15.2.1r
