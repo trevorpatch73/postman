@@ -1,0 +1,4 @@
+APIC,CONTROLLER_VERSION,ignoreCompat,pauseOnClusterFailure
+1.1.1.1,4.2.7u,TRUE,FALSE
+2.2.2.2,4.2.7u,TRUE,FALSE
+3.3.3.3,5.2.1r,TRUE,FALSE
