@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "ff474509-3a93-40b9-b7b8-2c57cca6b6a6",
+		"name": "Cisco ACI Switch Add Switch MaintGrp",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29545620"
+	},
+	"item": [
+		{
+			"name": "aaaLogin",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"aaaUser\": {\r\n    \"attributes\": {\r\n      \"name\": \"{{USERNAME}}\",\r\n      \"pwd\": \"{{PASSWORD}}\"\r\n    }\r\n  }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{APIC}}/api/aaaLogin.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"aaaLogin.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "fabricMaintGrp",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"maintMaintGrp\": {\r\n        \"attributes\": {\r\n            \"dn\": \"uni/fabric/maintgrp-{{MAINTENANCE_GROUP_NAME}}\",\r\n            \"name\": \"{{MAINTENANCE_GROUP_NAME}}\",\r\n            \"descr\": \"{{MAINTENANCE_GROUP_NAME}}\"\r\n        },\r\n        \"children\": [\r\n            {\r\n                \"maintRsMgrpp\": {\r\n                    \"attributes\": {\r\n                        \"tnMaintMaintPName\": \"{{MAINTENANCE_GROUP_NAME}}\"\r\n                    }\r\n                }\r\n            },\r\n            {\r\n                \"fabricNodeBlk\": {\r\n                    \"attributes\": {\r\n                        \"name\": \"nodeblk{{NODE_ID}}\",\r\n                        \"from_\": \"{{NODE_ID}}\",\r\n                        \"to_\": \"{{NODE_ID}}\"\r\n                    }\r\n                }\r\n            }\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{APIC}}/api/node/mo/uni/fabric/maintgrp-{{MAINTENANCE_GROUP_NAME}}.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"node",
+						"mo",
+						"uni",
+						"fabric",
+						"maintgrp-{{MAINTENANCE_GROUP_NAME}}.json"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
