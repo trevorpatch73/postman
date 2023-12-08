@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "8006c12d-8df8-4662-b709-90fa492f2a01",
+		"name": "Cisco ACI Remove Switch From MaintGroup",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "29545620"
+	},
+	"item": [
+		{
+			"name": "aaaLogin",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Check if this is a token refresh cycle or the start of the collection run\r",
+							"let runnerStart = pm.collectionVariables.get(\"runnerStart\") || 'false';\r",
+							"console.log(\"1st Call - runnerStart value:\", runnerStart);\r",
+							"\r",
+							"if (runnerStart === 'true') {\r",
+							"    // If the runner has already started and this is just a token refresh:\r",
+							"    postman.setNextRequest(\"fabricNodeInterfaces\");  // Move to 3rd call\r",
+							"} else {\r",
+							"    // If this is the start of the runner:\r",
+							"    postman.setNextRequest(\"fabricNodes\");  // Move to 2nd call\r",
+							"    pm.collectionVariables.set(\"runnerStart\", 'true');  // Set the flag to true to indicate the runner has started\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n        \"aaaUser\": {\r\n            \"attributes\": {\r\n                \"name\": \"{{USERNAME}}\",\r\n                \"pwd\": \"{{PASSWORD}}\"\r\n            }\r\n        }\r\n    }",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{APIC}}/api/aaaLogin.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"aaaLogin.json"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "https://{{APIC}}/api/node/mo/uni/fabric/maintgrp-OddGroup/nodeblk-NodeBlock1.json",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "https://{{APIC}}/api/node/mo/uni/fabric/maintgrp-OddGroup/nodeblk-NodeBlock1.json",
+					"protocol": "https",
+					"host": [
+						"{{APIC}}"
+					],
+					"path": [
+						"api",
+						"node",
+						"mo",
+						"uni",
+						"fabric",
+						"maintgrp-OddGroup",
+						"nodeblk-NodeBlock1.json"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
